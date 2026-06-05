@@ -8,9 +8,9 @@ It is built for people who trigger `Win+Tab` accidentally and want that one shor
 
 - Blocks `Win+Tab` with a low-level Windows keyboard hook.
 - Keeps tracking the Windows key state internally, which makes the block more reliable than a single instant key-state check.
-- Suppresses the remaining Windows-key release after a blocked `Win+Tab` sequence.
+- Blocks the `Tab` event only, so the Windows key release is still delivered normally.
 - Runs silently in the background.
-- Includes an optional watchdog scheduled task that restarts the app if it exits.
+- Can install an optional watchdog scheduled task that restarts the app if it exits.
 - Writes a small local log to `%LOCALAPPDATA%\WinTabGuard\WinTabGuard.log`.
 
 ## Install
@@ -28,10 +28,13 @@ The installer copies the executable to:
 %LOCALAPPDATA%\WinTabGuard\WinTabGuard.exe
 ```
 
-It also creates:
+It also creates a Startup shortcut so WinTabGuard starts when you sign in.
 
-- A Startup shortcut so WinTabGuard starts when you sign in.
-- A scheduled task named `WinTabGuard Watchdog` that checks once per minute whether the app is still running.
+To also install the optional watchdog task:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-WinTabGuard.ps1 -EnableWatchdog
+```
 
 ## Uninstall
 

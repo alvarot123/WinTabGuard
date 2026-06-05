@@ -1,5 +1,6 @@
 param(
-    [string] $PublishDirectory = (Join-Path $PSScriptRoot '..\artifacts\publish')
+    [string] $PublishDirectory = (Join-Path $PSScriptRoot '..\artifacts\publish'),
+    [switch] $EnableWatchdog
 )
 
 $ErrorActionPreference = 'Stop'
@@ -29,31 +30,36 @@ $shortcut.TargetPath = $targetExe
 $shortcut.WorkingDirectory = $installDirectory
 $shortcut.Save()
 
-$action = New-ScheduledTaskAction `
-    -Execute 'powershell.exe' `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$watchdogTarget`""
+Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
 
-$trigger = New-ScheduledTaskTrigger `
-    -Once `
-    -At (Get-Date).Date `
-    -RepetitionInterval (New-TimeSpan -Minutes 1) `
-    -RepetitionDuration (New-TimeSpan -Days 3650)
+if ($EnableWatchdog) {
+    $action = New-ScheduledTaskAction `
+        -Execute 'powershell.exe' `
+        -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$watchdogTarget`""
 
-$settings = New-ScheduledTaskSettingsSet `
-    -AllowStartIfOnBatteries `
-    -DontStopIfGoingOnBatteries `
-    -MultipleInstances IgnoreNew `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 2)
+    $trigger = New-ScheduledTaskTrigger `
+        -Once `
+        -At (Get-Date).Date `
+        -RepetitionInterval (New-TimeSpan -Minutes 1) `
+        -RepetitionDuration (New-TimeSpan -Days 3650)
 
-Register-ScheduledTask `
-    -TaskName $taskName `
-    -Action $action `
-    -Trigger $trigger `
-    -Settings $settings `
-    -Description 'Starts WinTabGuard if it is not running.' `
-    -Force | Out-Null
+    $settings = New-ScheduledTaskSettingsSet `
+        -AllowStartIfOnBatteries `
+        -DontStopIfGoingOnBatteries `
+        -MultipleInstances IgnoreNew `
+        -ExecutionTimeLimit (New-TimeSpan -Minutes 2)
+
+    Register-ScheduledTask `
+        -TaskName $taskName `
+        -Action $action `
+        -Trigger $trigger `
+        -Settings $settings `
+        -Description 'Starts WinTabGuard if it is not running.' `
+        -Force | Out-Null
+
+    Start-ScheduledTask -TaskName $taskName
+}
 
 Start-Process -FilePath $targetExe -WorkingDirectory $installDirectory -WindowStyle Hidden
-Start-ScheduledTask -TaskName $taskName
 
 Write-Host "$appName installed in $installDirectory"

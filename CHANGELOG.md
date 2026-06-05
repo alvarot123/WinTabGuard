@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+- Fixes a Windows-key release issue that could make the system behave as if `Win` was still pressed.
+- Makes the watchdog scheduled task opt-in instead of installing it by default.
+- Keeps release artifacts free of debug symbols.
+
 ## 1.0.0
 
 - Initial open-source release.

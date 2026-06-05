@@ -24,7 +24,6 @@ internal static class Program
     private static IntPtr _hookId = IntPtr.Zero;
     private static bool _leftWinDown;
     private static bool _rightWinDown;
-    private static bool _suppressWinRelease;
 
     private static void Main()
     {
@@ -90,12 +89,7 @@ internal static class Program
 
             TrackWindowsKeyState(virtualKeyCode, isKeyDown, isKeyUp);
 
-            if (ShouldBlockWinTab(virtualKeyCode, isKeyDown))
-            {
-                return 1;
-            }
-
-            if (ShouldSuppressWindowsKeyRelease(virtualKeyCode, isKeyUp))
+            if (ShouldBlockWinTab(virtualKeyCode))
             {
                 return 1;
             }
@@ -116,34 +110,9 @@ internal static class Program
         }
     }
 
-    private static bool ShouldBlockWinTab(int virtualKeyCode, bool isKeyDown)
+    private static bool ShouldBlockWinTab(int virtualKeyCode)
     {
-        if (virtualKeyCode != VK_TAB || !IsWindowsKeyPressed())
-        {
-            return false;
-        }
-
-        if (isKeyDown)
-        {
-            _suppressWinRelease = true;
-        }
-
-        return true;
-    }
-
-    private static bool ShouldSuppressWindowsKeyRelease(int virtualKeyCode, bool isKeyUp)
-    {
-        if (!isKeyUp || !_suppressWinRelease || (virtualKeyCode != VK_LWIN && virtualKeyCode != VK_RWIN))
-        {
-            return false;
-        }
-
-        if (!_leftWinDown && !_rightWinDown)
-        {
-            _suppressWinRelease = false;
-        }
-
-        return true;
+        return virtualKeyCode == VK_TAB && IsWindowsKeyPressed();
     }
 
     private static bool IsWindowsKeyPressed()

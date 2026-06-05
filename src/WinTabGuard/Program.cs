@@ -89,7 +89,7 @@ internal static class Program
 
             TrackWindowsKeyState(virtualKeyCode, isKeyDown, isKeyUp);
 
-            if (ShouldBlockWinTab(virtualKeyCode))
+            if (ShouldBlockWinTab(virtualKeyCode, isKeyDown))
             {
                 return 1;
             }
@@ -110,9 +110,9 @@ internal static class Program
         }
     }
 
-    private static bool ShouldBlockWinTab(int virtualKeyCode)
+    private static bool ShouldBlockWinTab(int virtualKeyCode, bool isKeyDown)
     {
-        return virtualKeyCode == VK_TAB && IsWindowsKeyPressed();
+        return isKeyDown && virtualKeyCode == VK_TAB && IsWindowsKeyPressed();
     }
 
     private static bool IsWindowsKeyPressed()

@@ -10,7 +10,7 @@
     <ApplicationIcon>..\..\assets\wintabguard.ico</ApplicationIcon>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>alvarot123</Authors>
     <Description>A tiny Windows utility that blocks the Win+Tab task view shortcut.</Description>
     <RepositoryType>git</RepositoryType>

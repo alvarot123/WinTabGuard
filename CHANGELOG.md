@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Narrows interception to the `Tab` key-down event only while a Windows key is pressed.
+- Preserves standalone `Win`, standalone `Tab`, `Tab` release, and other Windows-key shortcuts.
+
 ## 1.0.1
 
 - Fixes a Windows-key release issue that could make the system behave as if `Win` was still pressed.

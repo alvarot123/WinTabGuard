@@ -8,7 +8,7 @@ It is built for people who trigger `Win+Tab` accidentally and want that one shor
 
 - Blocks `Win+Tab` with a low-level Windows keyboard hook.
 - Keeps tracking the Windows key state internally, which makes the block more reliable than a single instant key-state check.
-- Blocks the `Tab` event only, so the Windows key release is still delivered normally.
+- Blocks only the `Tab` key-down event while a Windows key is pressed, so standalone `Win`, standalone `Tab`, `Tab` release, and other Windows-key shortcuts keep working normally.
 - Runs silently in the background.
 - Can install an optional watchdog scheduled task that restarts the app if it exits.
 - Writes a small local log to `%LOCALAPPDATA%\WinTabGuard\WinTabGuard.log`.
@@ -56,7 +56,7 @@ dotnet publish .\src\WinTabGuard\WinTabGuard.csproj -c Release -r win-x64 -o .\a
 
 ## How it works
 
-WinTabGuard installs a `WH_KEYBOARD_LL` hook with `SetWindowsHookEx`. When it sees `Tab` while either Windows key is pressed, it returns `1` from the hook callback, which tells Windows that the key event has been handled and should not continue to Task View.
+WinTabGuard installs a `WH_KEYBOARD_LL` hook with `SetWindowsHookEx`. When it sees the `Tab` key-down event while either Windows key is pressed, it returns `1` from the hook callback, which tells Windows that this one key event has been handled and should not continue to Task View.
 
 The app also tracks left and right Windows key down/up events itself. That avoids relying only on `GetAsyncKeyState`, which can be timing-sensitive for shell shortcuts.
 
